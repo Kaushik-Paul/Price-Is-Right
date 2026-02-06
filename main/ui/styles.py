@@ -121,39 +121,54 @@ CUSTOM_CSS = """
 .gradio-dataframe {
     border-radius: 12px !important;
     overflow: hidden !important;
-    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+    border: 2px solid rgba(102, 126, 234, 0.5) !important;
 }
 
 .gradio-dataframe table {
-    background: rgba(26, 26, 62, 0.8) !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
+    background: rgba(20, 20, 45, 0.95) !important;
+    border-collapse: collapse !important;
 }
 
 .gradio-dataframe th {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%) !important;
-    color: #e2e8f0 !important;
-    font-weight: 600 !important;
-    padding: 14px 12px !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    padding: 16px 14px !important;
     text-transform: uppercase !important;
-    font-size: 0.75rem !important;
+    font-size: 0.8rem !important;
     letter-spacing: 0.5px !important;
-    border-bottom: 2px solid #667eea !important;
+    border-bottom: 3px solid #667eea !important;
 }
 
 .gradio-dataframe td {
-    color: #e2e8f0 !important;
-    padding: 14px 12px !important;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.35) !important;
-    background: rgba(26, 26, 62, 0.6) !important;
+    color: #f0f0f0 !important;
+    padding: 16px 14px !important;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.4) !important;
+    border-right: 1px solid rgba(102, 126, 234, 0.2) !important;
+    background: rgba(26, 26, 62, 0.7) !important;
+}
+
+.gradio-dataframe td:last-child {
+    border-right: none !important;
+}
+
+.gradio-dataframe tr:nth-child(odd) td {
+    background: rgba(40, 40, 80, 0.6) !important;
 }
 
 .gradio-dataframe tr:nth-child(even) td {
-    background: rgba(102, 126, 234, 0.08) !important;
+    background: rgba(26, 26, 62, 0.8) !important;
 }
 
 .gradio-dataframe tr:hover td {
-    background: rgba(102, 126, 234, 0.2) !important;
+    background: rgba(102, 126, 234, 0.25) !important;
+}
+
+/* Special styling for first column (new deal indicator) */
+.gradio-dataframe td:first-child {
+    font-weight: 700 !important;
+    color: #ff6b6b !important;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
 }
 
 /* Plot container */
