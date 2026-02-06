@@ -34,13 +34,14 @@ class PlanningAgent(Agent):
         self.log(f"Planning Agent has processed a deal with discount ${discount:.2f}")
         return Opportunity(deal=deal, estimate=estimate, discount=discount)
 
-    def plan(self, memory: List[str] = []) -> Optional[Opportunity]:
+    def plan(self, memory: List[str] = [], user_email: str = None) -> Optional[Opportunity]:
         """
         Run the full workflow:
         1. Use the ScannerAgent to find deals from RSS feeds
         2. Use the EnsembleAgent to estimate them
         3. Use the MessagingAgent to send a notification of deals
         :param memory: a list of URLs that have been surfaced in the past
+        :param user_email: optional email address to send deal alerts to
         :return: an Opportunity if one was surfaced, otherwise None
         """
         self.log("Planning Agent is kicking off a run")
@@ -51,7 +52,7 @@ class PlanningAgent(Agent):
             best = opportunities[0]
             self.log(f"Planning Agent has identified the best deal has discount ${best.discount:.2f}")
             if best.discount > self.DEAL_THRESHOLD:
-                self.messenger.alert(best)
+                self.messenger.alert(best, to_email=user_email)
             self.log("Planning Agent has completed a run")
             return best if best.discount > self.DEAL_THRESHOLD else None
         return None

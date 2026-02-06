@@ -55,7 +55,10 @@ class ScrapedDeal:
         self.url = entry["links"][0]["href"]
         stuff = requests.get(self.url).content
         soup = BeautifulSoup(stuff, "html.parser")
-        content = soup.find("div", class_="content-section").get_text()
+        content_div = soup.find("div", class_="content-section")
+        if content_div is None:
+            raise ValueError(f"Could not find content-section for deal: {self.title}")
+        content = content_div.get_text()
         content = content.replace("\nmore", "").replace("\n", " ")
         if "Features" in content:
             self.details, self.features = content.split("Features", 1)
@@ -94,7 +97,11 @@ class ScrapedDeal:
         for feed_url in feed_iter:
             feed = feedparser.parse(feed_url)
             for entry in feed.entries[:10]:
-                deals.append(cls(entry))
+                try:
+                    deals.append(cls(entry))
+                except (ValueError, AttributeError, KeyError) as e:
+                    # Skip deals that fail to parse (e.g., missing content-section)
+                    continue
                 time.sleep(0.05)
         return deals
 
