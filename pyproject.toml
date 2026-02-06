@@ -1,0 +1,33 @@
+[project]
+name = "Price-Is-Right"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    # UI & Visualization
+    "gradio", 
+    "plotly",
+    
+    # Core LLM Connectivity
+    "openai", 
+    "litellm", 
+    "python-dotenv",
+    
+    # Vector DB (Used by the Planner and Plot)
+    "chromadb",
+    
+    # Scraping & Data
+    "beautifulsoup4", 
+    "feedparser", 
+    "requests", 
+    "pydantic", 
+    "tqdm",
+    
+    # Machine Learning (Neural Network Agent)
+    "torch", 
+    "numpy", 
+    "scikit-learn",
+    
+    # External Services
+    "modal",
+    "mailjet-rest",
+]
