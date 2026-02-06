@@ -1,11 +1,16 @@
 import logging
 import queue
+import re
 import threading
 import time
 import gradio as gr
 from deal_agent_framework import DealAgentFramework
 from log_utils import reformat
+from rate_limiter import RateLimiter
 import plotly.graph_objects as go
+
+# Email validation regex pattern
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
 
 
 class QueueHandler(logging.Handler):
@@ -42,11 +47,19 @@ def setup_logging(log_queue):
     logger.setLevel(logging.INFO)
 
 
+def is_valid_email(email: str) -> bool:
+    """Validate email using regex."""
+    if not email:
+        return False
+    return bool(EMAIL_REGEX.match(email.strip()))
+
+
 class GradioUI:
     """Gradio-based user interface for the Price is Right application."""
     
     def __init__(self, agent_framework: DealAgentFramework):
         self.agent_framework = agent_framework
+        self.rate_limiter = RateLimiter()
 
     def _table_for(self, opps):
         """Convert opportunities to table format."""
@@ -61,7 +74,7 @@ class GradioUI:
             for opp in opps
         ]
 
-    def _update_output(self, log_data, log_queue, result_queue):
+    def _update_output(self, log_data, log_queue, result_queue, email):
         """Generator that yields log updates and results."""
         initial_result = self._table_for(self.agent_framework.memory)
         final_result = None
@@ -69,11 +82,13 @@ class GradioUI:
             try:
                 message = log_queue.get_nowait()
                 log_data.append(reformat(message))
-                yield log_data, html_for(log_data), final_result or initial_result
+                yield log_data, html_for(log_data), final_result or initial_result, gr.update(interactive=False), ""
             except queue.Empty:
                 try:
                     final_result = result_queue.get_nowait()
-                    yield log_data, html_for(log_data), final_result or initial_result
+                    # Re-enable button and show status after completion
+                    status = self.rate_limiter.get_status_message()
+                    yield log_data, html_for(log_data), final_result or initial_result, gr.update(interactive=True), status
                 except queue.Empty:
                     if final_result is not None:
                         break
@@ -122,29 +137,59 @@ class GradioUI:
 
         return fig
 
-    def _do_run(self):
+    def _do_run(self, email: str = None):
         """Execute the agent framework and return table data."""
+        # Store email in framework for messaging agent to use
+        self.agent_framework.user_email = email
         new_opportunities = self.agent_framework.run()
         table = self._table_for(new_opportunities)
         return table
 
-    def _run_with_logging(self, initial_log_data):
+    def _validate_email(self, email: str):
+        """Validate email and return button state + status message."""
+        if is_valid_email(email):
+            status = self.rate_limiter.get_status_message()
+            return gr.update(interactive=True), status
+        else:
+            if email and email.strip():
+                return gr.update(interactive=False), '<div style="color: #ff6b6b;">⚠️ Please enter a valid email address</div>'
+            else:
+                return gr.update(interactive=False), '<div style="color: #888;">Enter your email to enable the Run button</div>'
+
+    def _run_with_logging(self, initial_log_data, email):
         """Run the agent with logging support."""
+        # First check rate limit
+        can_run, remaining = self.rate_limiter.can_run()
+        if not can_run:
+            error_msg = f'<div style="color: #ff6b6b; font-weight: bold;">⚠️ Daily limit reached! Maximum {self.rate_limiter.MAX_DAILY_RUNS} runs per day allowed. Resets at 12 AM IST.</div>'
+            yield initial_log_data, html_for(initial_log_data), self._table_for(self.agent_framework.memory), gr.update(interactive=True), error_msg
+            return
+        
+        # Validate email with regex
+        if not is_valid_email(email):
+            error_msg = '<div style="color: #ff6b6b; font-weight: bold;">⚠️ Please enter a valid email address.</div>'
+            yield initial_log_data, html_for(initial_log_data), self._table_for(self.agent_framework.memory), gr.update(interactive=True), error_msg
+            return
+        
+        email = email.strip()
+        
         log_queue = queue.Queue()
         result_queue = queue.Queue()
         setup_logging(log_queue)
 
         def worker():
-            result = self._do_run()
+            result = self._do_run(email)
+            # Increment rate limit counter after successful run
+            self.rate_limiter.increment_run_count()
             result_queue.put(result)
 
         thread = threading.Thread(target=worker)
         thread.start()
 
-        for log_data, output, final_result in self._update_output(
-            initial_log_data, log_queue, result_queue
+        for log_data, output, final_result, button_state, status in self._update_output(
+            initial_log_data, log_queue, result_queue, email
         ):
-            yield log_data, output, final_result
+            yield log_data, output, final_result, button_state, status
 
     def _do_select(self, selected_index: gr.SelectData):
         """Handle row selection in the dataframe."""
@@ -152,6 +197,10 @@ class GradioUI:
         row = selected_index.index[0]
         opportunity = opportunities[row]
         self.agent_framework.planner.messenger.alert(opportunity)
+
+    def _get_initial_status(self):
+        """Get the initial status message for rate limiting."""
+        return '<div style="color: #888;">Enter your email to enable the Run button</div>'
 
     def build(self) -> gr.Blocks:
         """Build and return the Gradio UI."""
@@ -166,6 +215,20 @@ class GradioUI:
                 gr.Markdown(
                     '<div style="text-align: center;font-size:14px">A proprietary fine-tuned LLM deployed on Modal and a RAG pipeline with a frontier model collaborate to send push notifications with great online deals.</div>'
                 )
+            
+            # Email input and Run button row
+            with gr.Row():
+                email_input = gr.Textbox(
+                    label="Email for Deal Alerts",
+                    placeholder="Enter your email to receive deal notifications",
+                    scale=3
+                )
+                run_button = gr.Button("🚀 Run Workflow", variant="primary", scale=1, interactive=False)
+            
+            # Status message for rate limiting
+            with gr.Row():
+                status_message = gr.HTML(value=self._get_initial_status())
+            
             with gr.Row():
                 opportunities_dataframe = gr.Dataframe(
                     headers=["Deals found so far", "Price", "Estimate", "Discount", "URL"],
@@ -181,17 +244,18 @@ class GradioUI:
                 with gr.Column(scale=1):
                     plot = gr.Plot(value=self._get_plot(), show_label=False)
 
-            ui.load(
-                self._run_with_logging,
-                inputs=[log_data],
-                outputs=[log_data, logs, opportunities_dataframe],
+            # Validate email on input change to enable/disable button
+            email_input.change(
+                self._validate_email,
+                inputs=[email_input],
+                outputs=[run_button, status_message],
             )
 
-            timer = gr.Timer(value=300, active=True)
-            timer.tick(
+            # Connect Run button to workflow (replaces timer)
+            run_button.click(
                 self._run_with_logging,
-                inputs=[log_data],
-                outputs=[log_data, logs, opportunities_dataframe],
+                inputs=[log_data, email_input],
+                outputs=[log_data, logs, opportunities_dataframe, run_button, status_message],
             )
 
             opportunities_dataframe.select(self._do_select)

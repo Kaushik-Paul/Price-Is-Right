@@ -22,11 +22,17 @@ class MessagingAgent(Agent):
         self.mailjet = Client(auth=(self.api_key, self.api_secret), version='v3.1')
         self.log("Messaging Agent has initialized Mailjet and LLM")
 
-    def send_email(self, text: str, subject: str = "Deal Alert!"):
+    def send_email(self, text: str, subject: str = "Deal Alert!", to_email: str = None):
         """
         Send an email notification using the Mailjet API
+        
+        Args:
+            text: The email body text
+            subject: Email subject line
+            to_email: Optional recipient email. Uses environment variable if not provided.
         """
-        self.log("Messaging Agent is sending an email notification")
+        recipient_email = to_email or self.to_email
+        self.log(f"Messaging Agent is sending an email notification to {recipient_email}")
         data = {
             'Messages': [
                 {
@@ -36,7 +42,7 @@ class MessagingAgent(Agent):
                     },
                     "To": [
                         {
-                            "Email": self.to_email,
+                            "Email": recipient_email,
                             "Name": "Deal Subscriber"
                         }
                     ],
@@ -48,16 +54,20 @@ class MessagingAgent(Agent):
         result = self.mailjet.send.create(data=data)
         return result.json()
 
-    def alert(self, opportunity: Opportunity):
+    def alert(self, opportunity: Opportunity, to_email: str = None):
         """
         Make an alert about the specified Opportunity
+        
+        Args:
+            opportunity: The deal opportunity to alert about
+            to_email: Optional recipient email. Uses environment variable if not provided.
         """
         text = f"Deal Alert! Price=${opportunity.deal.price:.2f}, "
         text += f"Estimate=${opportunity.estimate:.2f}, "
         text += f"Discount=${opportunity.discount:.2f} :"
         text += opportunity.deal.product_description[:10] + "... "
         text += opportunity.deal.url
-        self.send_email(text)
+        self.send_email(text, to_email=to_email)
         self.log("Messaging Agent has completed")
 
     def craft_message(
@@ -74,11 +84,18 @@ class MessagingAgent(Agent):
         )
         return response.choices[0].message.content
 
-    def notify(self, description: str, deal_price: float, estimated_true_value: float, url: str):
+    def notify(self, description: str, deal_price: float, estimated_true_value: float, url: str, to_email: str = None):
         """
         Make an alert about the specified details
+        
+        Args:
+            description: Item description
+            deal_price: The deal price
+            estimated_true_value: Estimated true value of the item
+            url: URL to the deal
+            to_email: Optional recipient email. Uses environment variable if not provided.
         """
         self.log("Messaging Agent is using LLM to craft the message")
         text = self.craft_message(description, deal_price, estimated_true_value)
-        self.send_email(text[:200] + "... " + url)
+        self.send_email(text[:200] + "... " + url, to_email=to_email)
         self.log("Messaging Agent has completed")

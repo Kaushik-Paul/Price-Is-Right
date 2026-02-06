@@ -69,6 +69,7 @@ class DealAgentFramework:
         self.memory = self.read_memory()
         self.collection = client.get_or_create_collection("products")
         self.planner = None
+        self.user_email = None  # Email for sending deal alerts
 
     def _init_gcp_client(self):
         """Initializes GCP storage client from base64 secret."""
@@ -145,7 +146,7 @@ class DealAgentFramework:
     def run(self) -> List[Opportunity]:
         self.init_agents_as_needed()
         logging.info("Kicking off Planning Agent")
-        result = self.planner.plan(memory=self.memory)
+        result = self.planner.plan(memory=self.memory, user_email=self.user_email)
         logging.info(f"Planning Agent has completed and returned: {result}")
         if result:
             self.memory.append(result)
