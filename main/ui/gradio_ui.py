@@ -39,6 +39,7 @@ def html_for(log_data):
         font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
         font-size: 13px;
         line-height: 1.6;
+        color: #e2e8f0;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         position: relative;
     ">
@@ -117,7 +118,7 @@ class GradioUI:
                 f"${opp.estimate:.2f}",
                 f"${opp.discount:.2f}",
                 date_str,
-                opp.deal.url,
+                f"[View Deal]({opp.deal.url})",  # Markdown link format for clickable URL
             ])
         return rows
 
@@ -521,8 +522,9 @@ class GradioUI:
             with gr.Row():
                 opportunities_dataframe = gr.Dataframe(
                     headers=["", "Deal Description", "Price", "Estimate", "Discount", "Date Added", "URL"],
+                    datatype=["str", "str", "str", "str", "str", "str", "markdown"],  # Enable markdown for URL column
                     wrap=True,
-                    column_widths=[1, 5, 1, 1, 1, 2, 3],
+                    column_widths=[1, 5, 1, 1, 1, 2, 2],
                     row_count=10,
                     col_count=7,
                     max_height=400,
