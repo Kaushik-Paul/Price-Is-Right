@@ -703,3 +703,4 @@ AGENTS.md
 
 # Keep products_vectorstore folder but ignore all contents
 main/products_vectorstore/*
+/gradio-sdk.txt
