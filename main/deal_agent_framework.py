@@ -11,6 +11,8 @@ from agents.planning_agent import PlanningAgent
 from agents.deals import Opportunity
 from sklearn.manifold import TSNE
 import numpy as np
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 load_dotenv(override=True)
 
@@ -149,6 +151,8 @@ class DealAgentFramework:
         result = self.planner.plan(memory=self.memory, user_email=self.user_email)
         logging.info(f"Planning Agent has completed and returned: {result}")
         if result:
+            # Add timestamp when the deal was added
+            result.added_at = datetime.now(ZoneInfo("Asia/Kolkata")).isoformat()
             self.memory.append(result)
             self.write_memory()
         return self.memory

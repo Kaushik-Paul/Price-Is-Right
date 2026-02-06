@@ -61,20 +61,43 @@ class GradioUI:
         self.agent_framework = agent_framework
         self.rate_limiter = RateLimiter()
 
-    def _table_for(self, opps):
-        """Convert opportunities to table format."""
-        return [
-            [
+    def _table_for(self, opps, highlight_index=None):
+        """Convert opportunities to table format, sorted by date (latest first)."""
+        # Sort by added_at timestamp (latest first), handling None values
+        sorted_opps = sorted(
+            opps, 
+            key=lambda opp: opp.added_at or "1970-01-01", 
+            reverse=True
+        )
+        
+        rows = []
+        for i, opp in enumerate(sorted_opps):
+            # Format the date nicely if available
+            date_str = ""
+            if opp.added_at:
+                try:
+                    from datetime import datetime
+                    dt = datetime.fromisoformat(opp.added_at)
+                    date_str = dt.strftime("%Y-%m-%d %H:%M")
+                except:
+                    date_str = opp.added_at[:16] if len(opp.added_at) > 16 else opp.added_at
+            
+            # Check if this is the newly added deal (it will be first after sorting)
+            is_new = (i == 0 and highlight_index is not None)
+            indicator = "🆕 NEW" if is_new else ""
+            
+            rows.append([
+                indicator,
                 opp.deal.product_description,
                 f"${opp.deal.price:.2f}",
                 f"${opp.estimate:.2f}",
                 f"${opp.discount:.2f}",
+                date_str,
                 opp.deal.url,
-            ]
-            for opp in opps
-        ]
+            ])
+        return rows
 
-    def _update_output(self, log_data, log_queue, result_queue, email):
+    def _update_output(self, log_data, log_queue, result_queue, email, had_new_deal):
         """Generator that yields log updates and results."""
         initial_result = self._table_for(self.agent_framework.memory)
         final_result = None
@@ -88,7 +111,7 @@ class GradioUI:
                     final_result = result_queue.get_nowait()
                     # Re-enable button and show status after completion
                     status = self.rate_limiter.get_status_message()
-                    yield log_data, html_for(log_data), final_result or initial_result, gr.update(interactive=True), status
+                    yield log_data, html_for(log_data), final_result, gr.update(interactive=True), status
                 except queue.Empty:
                     if final_result is not None:
                         break
@@ -141,8 +164,12 @@ class GradioUI:
         """Execute the agent framework and return table data."""
         # Store email in framework for messaging agent to use
         self.agent_framework.user_email = email
+        memory_before = len(self.agent_framework.memory)
         new_opportunities = self.agent_framework.run()
-        table = self._table_for(new_opportunities)
+        # Check if a new deal was added
+        had_new_deal = len(new_opportunities) > memory_before
+        # Highlight the first row if a new deal was added (since sorted latest first)
+        table = self._table_for(new_opportunities, highlight_index=0 if had_new_deal else None)
         return table
 
     def _validate_email(self, email: str):
@@ -176,6 +203,7 @@ class GradioUI:
         log_queue = queue.Queue()
         result_queue = queue.Queue()
         setup_logging(log_queue)
+        memory_before = len(self.agent_framework.memory)
 
         def worker():
             result = self._do_run(email)
@@ -186,8 +214,9 @@ class GradioUI:
         thread = threading.Thread(target=worker)
         thread.start()
 
+        had_new_deal = len(self.agent_framework.memory) > memory_before
         for log_data, output, final_result, button_state, status in self._update_output(
-            initial_log_data, log_queue, result_queue, email
+            initial_log_data, log_queue, result_queue, email, had_new_deal
         ):
             yield log_data, output, final_result, button_state, status
 
@@ -231,11 +260,11 @@ class GradioUI:
             
             with gr.Row():
                 opportunities_dataframe = gr.Dataframe(
-                    headers=["Deals found so far", "Price", "Estimate", "Discount", "URL"],
+                    headers=["", "Deal Description", "Price", "Estimate", "Discount", "Date Added", "URL"],
                     wrap=True,
-                    column_widths=[6, 1, 1, 1, 3],
+                    column_widths=[1, 5, 1, 1, 1, 2, 3],
                     row_count=10,
-                    col_count=5,
+                    col_count=7,
                     max_height=400,
                 )
             with gr.Row():

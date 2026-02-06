@@ -139,3 +139,4 @@ class Opportunity(BaseModel):
     deal: Deal
     estimate: float
     discount: float
+    added_at: str = None
