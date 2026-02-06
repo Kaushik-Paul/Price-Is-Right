@@ -504,6 +504,8 @@ typing-inspection==0.4.2
     # via
     #   fastapi
     #   pydantic
+tzdata==2025.3
+    # via price-is-right (pyproject.toml)
 urllib3==2.6.3
     # via
     #   kubernetes

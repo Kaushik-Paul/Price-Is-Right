@@ -21,6 +21,7 @@ dependencies = [
     "requests", 
     "pydantic==2.12.5",
     "tqdm",
+    "tzdata",
     
     # Machine Learning (Neural Network Agent)
     "torch", 
