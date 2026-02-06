@@ -15,14 +15,14 @@ BG_BLUE = '\033[44m'
 RESET = '\033[0m'
 
 mapper = {
-    BG_BLACK+RED: "#dd0000",
-    BG_BLACK+GREEN: "#00dd00",
-    BG_BLACK+YELLOW: "#dddd00",
-    BG_BLACK+BLUE: "#0000ee",
-    BG_BLACK+MAGENTA: "#aa00dd",
-    BG_BLACK+CYAN: "#00dddd",
-    BG_BLACK+WHITE: "#87CEEB",
-    BG_BLUE+WHITE: "#ff7800"
+    BG_BLACK+RED: "#ff6b6b",      # Bright coral red
+    BG_BLACK+GREEN: "#4ade80",     # Bright green
+    BG_BLACK+YELLOW: "#ffd700",    # Gold - more readable than dark yellow
+    BG_BLACK+BLUE: "#5dade2",      # Bright sky blue - more readable than dark blue
+    BG_BLACK+MAGENTA: "#da70d6",   # Bright orchid - more readable than dark magenta
+    BG_BLACK+CYAN: "#22d3ee",      # Bright cyan
+    BG_BLACK+WHITE: "#f0f0f0",     # Near white
+    BG_BLUE+WHITE: "#ff9f43"       # Bright orange
 }
 
 

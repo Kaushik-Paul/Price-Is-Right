@@ -67,7 +67,9 @@ class DealAgentFramework:
         self.storage_client = None
         if self.USE_GCP:
             self.storage_client = self._init_gcp_client()
-            
+        
+        # Track whether memory was successfully loaded to prevent accidental overwrite
+        self._memory_loaded_successfully = False
         self.memory = self.read_memory()
         self.collection = client.get_or_create_collection("products")
         self.planner = None
@@ -107,20 +109,44 @@ class DealAgentFramework:
                 try:
                     content = blob.download_as_text()
                     data = json.loads(content)
+                    self._memory_loaded_successfully = True
+                    self.log(f"Successfully loaded {len(data)} deals from GCP storage")
                     return [Opportunity(**item) for item in data]
                 except Exception as e:
                     logging.error(f"Failed to read memory from GCP: {e}")
-            return []
+                    self._memory_loaded_successfully = False
+                    return []
+            else:
+                # Blob doesn't exist yet - this is a fresh start, mark as successful
+                self._memory_loaded_successfully = True
+                self.log("No existing memory found in GCP, starting fresh")
+                return []
         else:
             if os.path.exists(self.MEMORY_FILENAME):
-                with open(self.MEMORY_FILENAME, "r") as file:
-                    data = json.load(file)
-                opportunities = [Opportunity(**item) for item in data]
-                return opportunities
-            return []
+                try:
+                    with open(self.MEMORY_FILENAME, "r") as file:
+                        data = json.load(file)
+                    opportunities = [Opportunity(**item) for item in data]
+                    self._memory_loaded_successfully = True
+                    return opportunities
+                except Exception as e:
+                    logging.error(f"Failed to read memory from local file: {e}")
+                    self._memory_loaded_successfully = False
+                    return []
+            else:
+                # File doesn't exist yet - this is a fresh start, mark as successful
+                self._memory_loaded_successfully = True
+                return []
 
     def write_memory(self) -> None:
+        # Safety check: Only write if memory was successfully loaded to prevent data loss
+        if not self._memory_loaded_successfully:
+            logging.error("SAFETY: Refusing to write memory because initial read failed. This prevents data loss.")
+            return
+        
         data = [opportunity.model_dump() for opportunity in self.memory]
+        self.log(f"Writing {len(data)} deals to storage")
+        
         if self.USE_GCP:
             blob = self._get_gcs_blob()
             if blob:
@@ -129,6 +155,7 @@ class DealAgentFramework:
                         json.dumps(data, indent=2),
                         content_type="application/json"
                     )
+                    self.log(f"Successfully saved {len(data)} deals to GCP storage")
                 except Exception as e:
                     logging.error(f"Failed to write memory to GCP: {e}")
         else:

@@ -62,11 +62,12 @@ class MessagingAgent(Agent):
             opportunity: The deal opportunity to alert about
             to_email: Optional recipient email. Uses environment variable if not provided.
         """
-        text = f"Deal Alert! Price=${opportunity.deal.price:.2f}, "
-        text += f"Estimate=${opportunity.estimate:.2f}, "
-        text += f"Discount=${opportunity.discount:.2f} :"
-        text += opportunity.deal.product_description[:10] + "... "
-        text += opportunity.deal.url
+        text = "🎉 Deal Alert!\n\n"
+        text += f"💰 Price: ${opportunity.deal.price:.2f}\n"
+        text += f"📊 Estimated Value: ${opportunity.estimate:.2f}\n"
+        text += f"🏷️ Discount: ${opportunity.discount:.2f}\n\n"
+        text += f"📦 Product: {opportunity.deal.product_description}\n\n"
+        text += f"🔗 Link: {opportunity.deal.url}\n"
         self.send_email(text, to_email=to_email)
         self.log("Messaging Agent has completed")
 
@@ -95,7 +96,16 @@ class MessagingAgent(Agent):
             url: URL to the deal
             to_email: Optional recipient email. Uses environment variable if not provided.
         """
-        self.log("Messaging Agent is using LLM to craft the message")
-        text = self.craft_message(description, deal_price, estimated_true_value)
-        self.send_email(text[:200] + "... " + url, to_email=to_email)
+        self.log("Messaging Agent is composing deal notification email")
+        discount = estimated_true_value - deal_price
+        
+        # Format email with proper line breaks for readability
+        text = "🎉 Deal Alert!\n\n"
+        text += f"💰 Price: ${deal_price:.2f}\n"
+        text += f"📊 Estimated Value: ${estimated_true_value:.2f}\n"
+        text += f"🏷️ Discount: ${discount:.2f}\n\n"
+        text += f"📦 Product: {description}\n\n"
+        text += f"🔗 Link: {url}\n"
+        
+        self.send_email(text, to_email=to_email)
         self.log("Messaging Agent has completed")
