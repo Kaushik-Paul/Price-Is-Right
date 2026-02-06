@@ -146,6 +146,18 @@ class RateLimiter:
         """
         can_run, remaining = self.can_run()
         if can_run:
-            return f"✓ {remaining} runs remaining today"
+            return f'''
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; 
+                            padding: 10px 16px; background: rgba(72, 187, 120, 0.15); 
+                            border: 1px solid rgba(72, 187, 120, 0.4); border-radius: 8px;">
+                    <span style="color: #48bb78; font-weight: 500;">✅ Ready! {remaining} runs remaining today</span>
+                </div>
+            '''
         else:
-            return "✗ Daily limit of 20 runs reached. Resets at 12 AM IST."
+            return '''
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; 
+                            padding: 10px 16px; background: rgba(255, 107, 107, 0.15); 
+                            border: 1px solid rgba(255, 107, 107, 0.4); border-radius: 8px;">
+                    <span style="color: #ff6b6b; font-weight: 500;">❌ Daily limit of 20 runs reached. Resets at 12 AM IST.</span>
+                </div>
+            '''
