@@ -117,43 +117,68 @@ CUSTOM_CSS = """
     cursor: not-allowed !important;
 }
 
-/* Dataframe styling - IMPROVED ROW VISIBILITY */
+/* Dataframe styling - CLEAN AND READABLE */
 .gradio-dataframe {
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
-    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+    border: 1px solid #4a5568 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 .gradio-dataframe table {
-    background: rgba(26, 26, 62, 0.8) !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
+    background: #1a202c !important;
+    border-collapse: collapse !important;
+    width: 100% !important;
 }
 
 .gradio-dataframe th {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%) !important;
-    color: #e2e8f0 !important;
+    background: #2d3748 !important;
+    color: #fff !important;
     font-weight: 600 !important;
-    padding: 14px 12px !important;
+    padding: 14px 16px !important;
     text-transform: uppercase !important;
     font-size: 0.75rem !important;
-    letter-spacing: 0.5px !important;
-    border-bottom: 2px solid #667eea !important;
+    letter-spacing: 1px !important;
+    border-bottom: 2px solid #4a5568 !important;
+    text-align: left !important;
 }
 
 .gradio-dataframe td {
     color: #e2e8f0 !important;
-    padding: 14px 12px !important;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.35) !important;
-    background: rgba(26, 26, 62, 0.6) !important;
+    padding: 14px 16px !important;
+    border-bottom: 1px solid #4a5568 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+}
+
+.gradio-dataframe tr:nth-child(odd) td {
+    background: #1a202c !important;
 }
 
 .gradio-dataframe tr:nth-child(even) td {
-    background: rgba(102, 126, 234, 0.08) !important;
+    background: #2d3748 !important;
 }
 
 .gradio-dataframe tr:hover td {
-    background: rgba(102, 126, 234, 0.2) !important;
+    background: #3d4a5c !important;
+}
+
+/* Hot deal indicator styling */
+.gradio-dataframe td:first-child {
+    font-weight: 700 !important;
+    color: #fc8181 !important;
+    white-space: nowrap !important;
+}
+
+/* URL column styling */
+.gradio-dataframe td:last-child a {
+    color: #90cdf4 !important;
+    text-decoration: none !important;
+}
+
+.gradio-dataframe td:last-child a:hover {
+    color: #63b3ed !important;
+    text-decoration: underline !important;
 }
 
 /* Plot container */

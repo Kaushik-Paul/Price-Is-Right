@@ -175,12 +175,6 @@ class GradioUI:
         with gr.Blocks(
             title="The Price is Right",
             fill_width=True,
-            css=CUSTOM_CSS,
-            theme=gr.themes.Soft(
-                primary_hue=gr.themes.colors.purple,
-                secondary_hue=gr.themes.colors.indigo,
-                neutral_hue=gr.themes.colors.slate,
-            )
         ) as ui:
             log_data = gr.State([])
 
@@ -213,7 +207,7 @@ class GradioUI:
                     wrap=True,
                     column_widths=[1, 5, 1, 1, 1, 2, 2],
                     row_count=10,
-                    col_count=7,
+                    column_count=7,
                     max_height=400,
                 )
             
@@ -248,4 +242,12 @@ class GradioUI:
     def launch(self, **kwargs):
         """Build and launch the Gradio UI."""
         ui = self.build()
-        ui.launch(**kwargs)
+        ui.launch(
+            css=CUSTOM_CSS,
+            theme=gr.themes.Soft(
+                primary_hue=gr.themes.colors.purple,
+                secondary_hue=gr.themes.colors.indigo,
+                neutral_hue=gr.themes.colors.slate,
+            ),
+            **kwargs
+        )

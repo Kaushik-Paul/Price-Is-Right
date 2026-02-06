@@ -148,7 +148,7 @@ def format_opportunity_row(opp, is_new: bool = False) -> list:
         except:
             date_str = opp.added_at[:16] if len(opp.added_at) > 16 else opp.added_at
     
-    indicator = "🆕 NEW" if is_new else ""
+    indicator = "🔥✨ HOT DEAL" if is_new else ""
     
     return [
         indicator,
