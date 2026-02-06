@@ -30,4 +30,5 @@ dependencies = [
     # External Services
     "modal",
     "mailjet-rest",
+    "google-cloud-storage",
 ]
