@@ -1,13 +1,13 @@
 # 💰 The Price is Right
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Hugging_Face-yellow?logo=huggingface&logoColor=white&labelColor=FFA500)](https://huggingface.co/spaces/kaushikpaul/Price-Is-Right)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Hugging_Face-yellow?logo=huggingface&logoColor=white&labelColor=FFA500)](https://projects.kaushikpaul.co.in/price-is-right)
 [![Fine-tuned Model](https://img.shields.io/badge/Model-price--2026--lite-blue?logo=huggingface&logoColor=white)](https://huggingface.co/kaushikpaul/price-2026-01-25_17.05.35-lite)
 [![Dataset](https://img.shields.io/badge/Dataset-22K_Items-green?logo=huggingface&logoColor=white)](https://huggingface.co/datasets/kaushikpaul/items_prompts_lite)
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
 An **Autonomous Multi-Agent AI System** that discovers exceptional deals by combining **fine-tuned Large Language Models**, **Deep Neural Networks**, and **RAG-powered analysis**. The system scrapes live deal feeds, predicts true product values using ensemble ML models, and instantly alerts you when it finds items priced significantly below their estimated worth.
 
-> **Try it live**: [https://huggingface.co/spaces/kaushikpaul/Price-Is-Right](https://huggingface.co/spaces/kaushikpaul/Price-Is-Right)
+> **Try it live**: [https://huggingface.co/spaces/kaushikpaul/Price-Is-Right](https://projects.kaushikpaul.co.in/price-is-right)
 
 ---
 
