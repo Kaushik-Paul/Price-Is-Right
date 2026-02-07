@@ -81,8 +81,8 @@ class GradioUI:
 
     def _get_plot(self):
         """Generate the 3D scatter plot visualization."""
-        documents, vectors, colors = DealAgentFramework.get_plot_data(max_datapoints=800)
-        return create_3d_plot(documents, vectors, colors)
+        documents, vectors, colors, categories = DealAgentFramework.get_plot_data(max_datapoints=800)
+        return create_3d_plot(documents, vectors, colors, categories)
 
     def _do_run(self, email: str = None):
         """Execute the agent framework and return table data."""

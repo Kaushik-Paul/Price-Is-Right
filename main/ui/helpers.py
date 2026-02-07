@@ -79,8 +79,15 @@ def html_for_logs(log_data: list) -> str:
     """
 
 
-def create_3d_plot(documents: list, vectors: np.ndarray, colors: list) -> go.Figure:
-    """Create the 3D scatter plot visualization for deal embeddings."""
+def create_3d_plot(documents: list, vectors: np.ndarray, colors: list, categories: list = None) -> go.Figure:
+    """Create the 3D scatter plot visualization for deal embeddings.
+    
+    Args:
+        documents: List of product descriptions
+        vectors: Numpy array of 3D coordinates after t-SNE reduction
+        colors: List of color strings for each point
+        categories: List of category names for each point (optional)
+    """
     # If no data is returned, show an empty plot with a message
     if not documents or len(vectors) == 0:
         fig = go.Figure()
@@ -89,6 +96,18 @@ def create_3d_plot(documents: list, vectors: np.ndarray, colors: list) -> go.Fig
             height=400,
         )
         return fig
+
+    # Prepare hover text based on categories
+    if categories:
+        # Format category names to be more readable
+        formatted_categories = [cat.replace("_", " ") for cat in categories]
+        # Clean and truncate product descriptions for concise hover
+        clean_docs = [doc.replace("Title: ", "", 1) if doc.startswith("Title: ") else doc for doc in documents]
+        truncated_docs = [doc[:15] + "..." if len(doc) > 15 else doc for doc in clean_docs]
+        hover_text = [f"<b>Category:</b> {cat}<br><b>Product:</b> {doc}" 
+                      for cat, doc in zip(formatted_categories, truncated_docs)]
+    else:
+        hover_text = documents
 
     # Create the 3D scatter plot
     fig = go.Figure(
@@ -99,6 +118,8 @@ def create_3d_plot(documents: list, vectors: np.ndarray, colors: list) -> go.Fig
                 z=vectors[:, 2],
                 mode="markers",
                 marker=dict(size=2, color=colors, opacity=0.7),
+                text=hover_text,
+                hovertemplate='%{text}<extra></extra>',
             )
         ]
     )
