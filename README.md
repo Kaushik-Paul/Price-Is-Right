@@ -250,7 +250,7 @@ The Gradio interface will launch at `http://localhost:7860`.
 
 ### Vector Database Setup
 
-The project uses a **ChromaDB** vector store to enable semantic product discovery. You must populate this store before the 3D visualization and scanner agent can function optimally.
+The project uses a **ChromaDB** vector store to enable semantic product discovery. You must populate this store before the 3D visualization and scanner agent can function optimally. The system leverages a **custom dataset curated by the author**: [kaushikpaul/items_prompts_lite](https://huggingface.co/datasets/kaushikpaul/items_prompts_lite).
 
 ```bash
 # Navigate to the main directory
@@ -262,7 +262,7 @@ python build_vector_store.py
 
 **What this script does:**
 
-1. Downloads the [22,000 item dataset](https://huggingface.co/datasets/kaushikpaul/items_prompts_lite) using the `datasets` library.
+1. Downloads the **author's curated dataset** (22,000 items) directly from Hugging Face.
 2. Initializes a persistent ChromaDB instance in `main/products_vectorstore`.
 3. Generates embeddings for product descriptions and stores them with category metadata.
 4. Enables the **3D Embedding Visualization** in the Gradio UI.
