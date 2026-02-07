@@ -246,6 +246,29 @@ The Gradio interface will launch at `http://localhost:7860`.
 
 ---
 
+## 🛠️ Data Infrastructure Setup
+
+### Vector Database Setup
+
+The project uses a **ChromaDB** vector store to enable semantic product discovery. You must populate this store before the 3D visualization and scanner agent can function optimally.
+
+```bash
+# Navigate to the main directory
+cd main
+
+# Run the build script to download data and generate embeddings
+python build_vector_store.py
+```
+
+**What this script does:**
+
+1. Downloads the [22,000 item dataset](https://huggingface.co/datasets/kaushikpaul/items_prompts_lite) using the `datasets` library.
+2. Initializes a persistent ChromaDB instance in `main/products_vectorstore`.
+3. Generates embeddings for product descriptions and stores them with category metadata.
+4. Enables the **3D Embedding Visualization** in the Gradio UI.
+
+---
+
 ## 🎯 How It Works
 
 1. **Deal Discovery**: Scanner Agent fetches latest deals from electronics/tech RSS feeds

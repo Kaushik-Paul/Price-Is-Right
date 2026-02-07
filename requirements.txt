@@ -6,6 +6,7 @@ aiohappyeyeballs==2.6.1
     # via aiohttp
 aiohttp==3.13.3
     # via
+    #   fsspec
     #   litellm
     #   modal
 aiosignal==1.4.0
@@ -64,6 +65,12 @@ cuda-bindings==12.9.4
     # via torch
 cuda-pathfinder==1.3.3
     # via cuda-bindings
+datasets==4.5.0
+    # via price-is-right (pyproject.toml)
+dill==0.4.0
+    # via
+    #   datasets
+    #   multiprocess
 distro==1.9.0
     # via
     #   openai
@@ -80,6 +87,7 @@ ffmpy==1.0.0
     # via gradio
 filelock==3.20.3
     # via
+    #   datasets
     #   huggingface-hub
     #   torch
 flatbuffers==25.12.19
@@ -88,8 +96,9 @@ frozenlist==1.8.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2026.2.0
+fsspec==2025.10.0
     # via
+    #   datasets
     #   gradio-client
     #   huggingface-hub
     #   torch
@@ -145,6 +154,7 @@ httptools==0.7.1
 httpx==0.28.1
     # via
     #   chromadb
+    #   datasets
     #   gradio
     #   gradio-client
     #   huggingface-hub
@@ -153,6 +163,7 @@ httpx==0.28.1
     #   safehttpx
 huggingface-hub==1.4.1
     # via
+    #   datasets
     #   gradio
     #   gradio-client
     #   tokenizers
@@ -210,6 +221,8 @@ multidict==6.7.1
     #   aiohttp
     #   grpclib
     #   yarl
+multiprocess==0.70.18
+    # via datasets
 narwhals==2.16.0
     # via plotly
 networkx==3.6.1
@@ -218,6 +231,7 @@ numpy==2.4.2
     # via
     #   price-is-right (pyproject.toml)
     #   chromadb
+    #   datasets
     #   gradio
     #   onnxruntime
     #   pandas
@@ -299,13 +313,16 @@ overrides==7.7.0
 packaging==26.0
     # via
     #   build
+    #   datasets
     #   gradio
     #   gradio-client
     #   huggingface-hub
     #   onnxruntime
     #   plotly
 pandas==3.0.0
-    # via gradio
+    # via
+    #   datasets
+    #   gradio
 pillow==12.1.0
     # via gradio
 plotly==6.5.2
@@ -326,6 +343,8 @@ protobuf==6.33.5
     #   onnxruntime
     #   opentelemetry-proto
     #   proto-plus
+pyarrow==23.0.0
+    # via datasets
 pyasn1==0.6.2
     # via
     #   pyasn1-modules
@@ -371,6 +390,7 @@ pytz==2025.2
 pyyaml==6.0.3
     # via
     #   chromadb
+    #   datasets
     #   gradio
     #   huggingface-hub
     #   kubernetes
@@ -384,6 +404,7 @@ regex==2026.1.15
 requests==2.32.5
     # via
     #   price-is-right (pyproject.toml)
+    #   datasets
     #   google-api-core
     #   google-cloud-storage
     #   kubernetes
@@ -459,6 +480,7 @@ tqdm==4.67.3
     # via
     #   price-is-right (pyproject.toml)
     #   chromadb
+    #   datasets
     #   huggingface-hub
     #   openai
 triton==3.6.0
@@ -524,6 +546,8 @@ websocket-client==1.9.0
     # via kubernetes
 websockets==16.0
     # via uvicorn
+xxhash==3.6.0
+    # via datasets
 yarl==1.22.0
     # via aiohttp
 zipp==3.23.0
