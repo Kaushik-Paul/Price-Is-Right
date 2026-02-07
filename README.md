@@ -7,7 +7,7 @@
 
 An **Autonomous Multi-Agent AI System** that discovers exceptional deals by combining **fine-tuned Large Language Models**, **Deep Neural Networks**, and **RAG-powered analysis**. The system scrapes live deal feeds, predicts true product values using ensemble ML models, and instantly alerts you when it finds items priced significantly below their estimated worth.
 
-> **Try it live**: [https://huggingface.co/spaces/kaushikpaul/Price-Is-Right](https://projects.kaushikpaul.co.in/price-is-right)
+> **Try it live**: [https://projects.kaushikpaul.co.in/price-is-right](https://projects.kaushikpaul.co.in/price-is-right)
 
 ---
 
