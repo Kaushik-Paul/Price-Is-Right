@@ -77,12 +77,12 @@ flowchart TB
 | Agent | Role | Technologies |
 |-------|------|--------------|
 | **Planning Agent** | Orchestrates the entire pipeline, coordinates agents, and identifies the best deals | Agent coordination, threshold filtering |
-| **Scanner Agent** | Scrapes RSS feeds, extracts deals, and uses GPT to select high-quality items | OpenRouter API, Structured Outputs, feedparser |
-| **Preprocessor** | Rewrites product descriptions into standardized format for ML models | LiteLLM, GPT-based text normalization |
+| **Scanner Agent** | Scrapes RSS feeds, extracts deals, and uses GPT to select high-quality items | OpenAI-compatible Chat Completions API, feedparser |
+| **Preprocessor** | Rewrites product descriptions into standardized format for ML models | OpenAI-compatible Chat Completions API |
 | **Ensemble Agent** | Combines predictions from multiple models using weighted averaging | Ensemble learning (90% NN + 10% LLM) |
 | **Specialist Agent** | Runs fine-tuned LLM on serverless GPU infrastructure | Modal, PEFT/QLoRA, Transformers |
 | **Neural Network Agent** | Performs inference using deep neural network | PyTorch, HashingVectorizer |
-| **Messaging Agent** | Composes and sends deal alert emails | Mailjet API, LiteLLM |
+| **Messaging Agent** | Composes and sends deal alert emails | Mailjet API, OpenAI-compatible Chat Completions API |
 
 ---
 
@@ -138,7 +138,7 @@ This weighted ensemble leverages the strengths of both approaches:
 | Category | Technologies |
 |----------|-------------|
 | **AI/ML** | PyTorch, Transformers, PEFT, QLoRA, scikit-learn |
-| **LLM Providers** | OpenRouter, LiteLLM (model-agnostic routing) |
+| **LLM Providers** | Any OpenAI-compatible Chat Completions API |
 | **Vector Database** | ChromaDB (embeddings + similarity search) |
 | **Serverless ML** | Modal (GPU inference platform) |
 | **Data Processing** | BeautifulSoup, feedparser, Pydantic |
@@ -210,8 +210,10 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-# Required - LLM API Access
-OPENROUTER_API_KEY=sk-or-...
+# Required - OpenAI-compatible chat completions endpoint
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_API_KEY=your-api-key
+OPENAI_MODEL=your-model-name
 
 # Required - Modal (for inference of fine-tuned model)
 MODAL_TOKEN_ID=...
@@ -231,6 +233,10 @@ GCP_SERVICE_ACCOUNT_BASE64=...
 # Optional - Rate Limiting
 MAX_DAILY_RUNS=20
 ```
+
+`OPENAI_BASE_URL` may point to OpenAI or any provider that implements the
+OpenAI-compatible `/chat/completions` API. Set `OPENAI_MODEL` to the model ID
+expected by that endpoint, without a routing-provider prefix.
 
 ### Running Locally
 
@@ -334,7 +340,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - [Hugging Face](https://huggingface.co/) for model hosting and Spaces deployment
 - [Modal](https://modal.com/) for serverless GPU infrastructure
-- [OpenRouter](https://openrouter.ai/) for unified LLM API access
+- Any OpenAI-compatible provider for chat completions
 - [DealNews](https://www.dealnews.com/) for real-time deal feeds
 
 ---

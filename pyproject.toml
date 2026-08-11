@@ -9,7 +9,6 @@ dependencies = [
     
     # Core LLM Connectivity
     "openai==2.17.0",
-    "litellm", 
     "python-dotenv",
     
     # Vector DB (Used by the Planner and Plot)

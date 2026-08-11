@@ -1,14 +1,13 @@
 import os
 from agents.deals import Opportunity
 from agents.agent import Agent
-from litellm import completion
+from llm_config import create_llm_client, get_llm_config
 from mailjet_rest import Client
 
 
 class MessagingAgent(Agent):
     name = "Messaging Agent"
     color = Agent.WHITE
-    MODEL = "openrouter/xiaomi/mimo-v2-flash"
 
     def __init__(self):
         """
@@ -20,6 +19,9 @@ class MessagingAgent(Agent):
         self.from_email = os.getenv("MAILJET_FROM_EMAIL")
         self.to_email = os.getenv("MAILJET_TO_EMAIL")
         self.mailjet = Client(auth=(self.api_key, self.api_secret), version='v3.1')
+        config = get_llm_config()
+        self.model = config.model
+        self.openai = create_llm_client(config)
         self.log("Messaging Agent has initialized Mailjet and LLM")
 
     def send_email(self, text: str, subject: str = "Deal Alert!", to_email: str = None):
@@ -77,8 +79,8 @@ class MessagingAgent(Agent):
         user_prompt = "Please summarize this great deal in 2-3 sentences to be sent as an exciting push notification alerting the user about this deal.\n"
         user_prompt += f"Item Description: {description}\nOffered Price: {deal_price}\nEstimated true value: {estimated_true_value}"
         user_prompt += "\n\nRespond only with the 2-3 sentence message which will be used to alert & excite the user about this deal"
-        response = completion(
-            model=self.MODEL,
+        response = self.openai.chat.completions.create(
+            model=self.model,
             messages=[
                 {"role": "user", "content": user_prompt},
             ],
