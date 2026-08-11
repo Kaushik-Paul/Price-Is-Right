@@ -250,6 +250,22 @@ python app.py
 
 The Gradio interface will launch at `http://localhost:7860`.
 
+### Deploying to Hugging Face Spaces
+
+Authenticate with the Hugging Face CLI, preview the upload, and deploy:
+
+```bash
+hf auth login
+python main/scripts/deploy_space.py --dry-run
+python main/scripts/deploy_space.py --repo-id USER_OR_ORG/SPACE_NAME
+```
+
+You can also set `HF_SPACE_ID=USER_OR_ORG/SPACE_NAME` instead of passing
+`--repo-id`. The deployment excludes `.env` files and the local
+`main/products_vectorstore` contents. Configure application credentials in the
+Space settings and use `main/upload_vectorstore.py` when the vector store needs
+to be uploaded separately.
+
 ---
 
 ## 🛠️ Data Infrastructure Setup
